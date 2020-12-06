@@ -10,6 +10,10 @@
 from .models import Question
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
+#5
+from .forms import QuestionForm
+
+
             # Create your views here.
 #1
 # def index(request):
@@ -43,3 +47,23 @@ def answer_create(request, question_id):
     question.answer_set.create(content=request.POST.get('content'), create_date=timezone.now())
     return redirect('rqboard:detail', question_id=question.id)
 
+#뷰함수 추가
+def question_create(request):
+    """
+    rqboard 질문등록
+    """
+    #form = QuestionForm()
+    #return render(request, 'rqboard/question_form.html', {'form':form})
+
+    #전송된 폼 저장
+    if request.method == 'POST':
+        form = QuestionForm(request.POST)
+        if form.is_valid():
+            question = form.save(commit=False)
+            question.create_date = timezone.now()
+            question.save()
+            return redirect('rqboard:index')
+    else:
+        form = QuestionForm()
+    context = {'form':form}
+    return render(request, 'rqboard/question_form.html', context)
